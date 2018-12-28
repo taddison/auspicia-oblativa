@@ -12,6 +12,6 @@ You can't, it doesn't exist yet.
 
 You can find details on what is planned in the roadmap file in the docs folder.
 
-Inspiration for this system comes from the code you can find in the [OMS to Slack](OMS to Slack repo) repo.
+Inspiration for this system comes from the code you can find in the [OMS to Slack][OMS to Slack repo] repo.
 
 [OMS to Slack repo]: https://github.com/taddison/blog-oms-to-slack
