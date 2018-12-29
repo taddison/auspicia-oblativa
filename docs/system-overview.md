@@ -66,6 +66,9 @@ Supported notifications and their configuration details:
 - How should notifications be configured?  Configuring some of the notification in the alert rule allows for customised error messages, but it means any complex processing (e.g constructing a detailed card to send via MS Teams) is much harder.  Maybe a fairly small set of defined options for each notification?
   - Should there be tokens/token replacement in the messages?  Notifications should be easy to understand
 - Some notification configuration should be kept out of the alert rule, so that changes to e.g. an api key don't require updating alert rules.
+- What does testing look like?  Both in terms of testing the config isn't broken (a bad deploy of a config renders the app useless), and in terms of any of the individual functions work.
+- What happens if an app is deployed during function orchestration - how do existing contexts that might be executing transition?
+- What does testing in production look like?
 
 [Azure Functions]: https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview
 [Durable Functions]: https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
