@@ -70,5 +70,14 @@ Supported notifications and their configuration details:
 - What happens if an app is deployed during function orchestration - how do existing contexts that might be executing transition?
 - What does testing in production look like?
 
+## Answered questions
+- What does local testing look like?
+  - Durable function testing works fine with the storage emulator (verified with functions 1.0.24 and DurableTask 1.7.0).  Requires an explicit reference to Newtonsoft.Json 11.0.2.
+
+## Technical References
+- https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-checkpointing-and-replay
+- https://medium.com/@tsuyoshiushio/durable-functions-101-35aa3919f182
+- https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+
 [Azure Functions]: https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview
 [Durable Functions]: https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
