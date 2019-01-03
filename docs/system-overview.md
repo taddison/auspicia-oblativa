@@ -22,27 +22,34 @@ Optional:
 - Criteria to evaluate the monitor (no criteria means always true)
 - A filter for the dimensions of the monitor (e.g. server name)
 
-An incoming notification name (e.g. `Server-CPU`) can have multiple alerts attached to it.  This might look like this:
+An incoming monitor (e.g. `Server-CPU`) can have multiple alerts attached to it.  This might look like this:
 
 ```json
 {
     "AlertRules": [
         {   
+            "AlertRuleId": "Server CPU - All Servers",
             "MonitorName": "Server-CPU", 
-            "Notification": "Slack-AllProd"
+            "Notifications": [{
+                "NotificationTargetId": "Slack",
+                "Channel": "#proudctionisburning"
+            }]
         }
         ,{  
+            "AlertRuleId": "Server CPU - Web Servers",
             "MonitorName": "Server-CPU",
             "Conditions": [
                 { "ServerName": "web" }
             ],
-            "Notification": "Slack-WebTeam" 
+            "Notifications": [{
+                "NotificationTargetId": "Slack",
+                "Channel": "#webteam",
+                "Message": "Web CPU is high"
+            }]
         }
     ]
 }
 ```
-
-This alert configuration would send a Slack message to the `Slack-AllProd` channel for every CPU notification received, and also to the `Slack-WebTeam` channel only when the ServerName contains web.
 
 ## Notification
 
@@ -63,16 +70,18 @@ Supported notifications and their configuration details:
   - Message
 
 ## Outstanding questions
-- How should notifications be configured?  Configuring some of the notification in the alert rule allows for customised error messages, but it means any complex processing (e.g constructing a detailed card to send via MS Teams) is much harder.  Maybe a fairly small set of defined options for each notification?
-  - Should there be tokens/token replacement in the messages?  Notifications should be easy to understand
-- Some notification configuration should be kept out of the alert rule, so that changes to e.g. an api key don't require updating alert rules.
 - What does testing look like?  Both in terms of testing the config isn't broken (a bad deploy of a config renders the app useless), and in terms of any of the individual functions work.
-- What happens if an app is deployed during function orchestration - how do existing contexts that might be executing transition?
+  - Because alert rule notifications are so flexible (maybe the alert doesn't even have a metric, it might go to an SMS, Webhook JSON payload, Slack, MS Teams channel, PagerDuty), testing definitions is important (both when rules are changed, and code that handles them is updated)
 - What does testing in production look like?
 
 ## Answered questions
 - What does local testing look like?
   - Durable function testing works fine with the storage emulator (verified with functions 1.0.24 and DurableTask 1.7.0).  Requires an explicit reference to Newtonsoft.Json 11.0.2.
+- Notification configuration split
+  - `NotificationTarget` contains configuration data - e.g. for MS Teams - Id, Endpoint Uri
+  - `AlertRule` contains details to be sent to the `NotificationTarget`, e.g. Message, CardType
+  - Limited replacement tokens (e.g. METRIC_AVG, METRIC_MIN_MAX_AVG)
+- If a new orchestrator function is deployed the hub name needs to be changed so that new executions will get dedicated replays
 
 ## Technical References
 - https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-checkpointing-and-replay
