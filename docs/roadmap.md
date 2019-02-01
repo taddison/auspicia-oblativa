@@ -1,6 +1,20 @@
 # Auspicia Oblativa Roadmap
 
-Webhooks in.  Webhooks out.  Designed to take notifications from monitoring systems and apply filters and routing rules to let you know something needs your attention (Slack, MS Teams, PagerDuty).
+Webhooks in.  Webhooks out.  Designed to take notifications from monitoring systems and apply filters and routing rules to let you know something needs your attention.  Targeting Azure Monitor -> MS Teams for v1.
+
+Some guiding principles:
+
+- Authoring new alerts should allow for easy testing (does it fire when I think? does it look right? have I broken the world?)
+- Rich message delivery should be easy to author (server X triggers an alert? we have a custom dashboard for that) - aim to leverage the message card/adaptive card format
+- Initial deploy should support stateless routing, with an eye to extend later with throttling, suppression, status, and more.
+
+---
+
+## Old stuff
+
+No longer part of the roadmap - kept for inspiration pending cleanup
+
+---
 
 ## 0.1
 - Schema for a `InNotification`, `NotificationRule`, `OutNotification`, `OutNotificationTarget`

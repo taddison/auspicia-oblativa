@@ -1,5 +1,46 @@
 # AO System Overview
 
+The system is built to accept a webhook from Azure Monitor, and then consult a set of rules, optionally sending a notification to MS Teams for every matching rule/condition.
+
+The flow looks like this:
+
+- Receive message and turn into an `InNotification`
+- See if any `NotificationRules` match
+- For each match run through the processing logic and optionally send any `OutNotification`s.
+
+The simplest example of an alert rule is:
+
+```csharp
+public bool IsMatch(InNotification notification) {
+    return true;
+}
+
+public async Task EvaluateNotification(InNotification notification, ILogger log) {
+    log.Trace($"The always true logger was called for {notification.Name}");
+}
+```
+
+Each rule is designed to have a _fast_ evaluation method `IsMatch`, and a second - potentially slower - `EvaluateNotification` method.  They might be called like this (pseudocode):
+
+```csharp
+var inNotification = processWebhookFromAzureMonitor(payload);
+var fastMatches = GetRules().Where(rule => rule.IsMatch(inNotification));
+foreach(var match in fastMatches)
+{
+    await match.EvaluateNotification(inNotification);
+}
+```
+
+At some point the system will support parallel evaluation (potentially via the durable task framework) so that evaluations can potentially be complex and expensive, querying external resources to determine if there should be a trigger.
+
+---
+
+## Old stuff
+
+Kept for inspiration.
+
+---
+
 The system is built as a set of [Azure Functions].  The functions chain using [Durable Functions] rather than wiring up the intermedia storage queues.
 
 The system reacts to *notifications* triggered by external systems.  These are ingested by calling an endpoint, and are most probably webhooks.  The flow of an notification is typically:
