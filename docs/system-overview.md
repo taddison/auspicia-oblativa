@@ -1,6 +1,6 @@
 # AO System Overview
 
-The system is built to accept a webhook from Azure Monitor, and then consult a set of rules, optionally sending a notification to MS Teams for every matching rule/condition.
+The system is built to accept a webhook from Azure Monitor, consult a set of rules, optionally sending a notification to MS Teams if any rules match.
 
 The flow looks like this:
 
@@ -11,11 +11,13 @@ The flow looks like this:
 The simplest example of an alert rule is:
 
 ```csharp
-public bool IsMatch(InNotification notification) {
+public bool IsMatch(InNotification notification)
+{
     return true;
 }
 
-public async Task EvaluateNotification(InNotification notification, ILogger log) {
+public async Task EvaluateNotification(InNotification notification, ILogger log)
+{
     log.Trace($"The always true logger was called for {notification.Name}");
 }
 ```
@@ -31,7 +33,23 @@ foreach(var match in fastMatches)
 }
 ```
 
-At some point the system will support parallel evaluation (potentially via the durable task framework) so that evaluations can potentially be complex and expensive, querying external resources to determine if there should be a trigger.
+At some point the system will support parallel evaluation (potentially via the durable task framework) so that evaluations can be expensive/time consuming, querying external resources to determine if there should be a trigger.
+
+## Rule Authoring
+
+Each rule is an instance of an `IAlertRule`.  Initially every rule has its own class - eventually there may be factory support.
+
+```csharp
+IEnumerable<IAlertRule> GetRules()
+{
+    var rules = new List<IAlertNotification>();
+    rules.add(new LogEverythingRule());
+    rules.add(new CPUToTeamsRule(45,90)); // thresholds for warn/critical
+    return rules;
+}
+```
+
+By modelling rules as code they are deployed/versioned along with the rest of the app.  Any broken rule deployment will hopefully break the build.  They will also be easier to test in isolation or against historic data patterns.
 
 ---
 
