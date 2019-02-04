@@ -26,14 +26,16 @@ Each rule is designed to have a _fast_ evaluation method `IsMatch`, and a second
 
 ```csharp
 var inNotification = processWebhookFromAzureMonitor(payload);
-var fastMatches = GetRules().Where(rule => rule.IsMatch(inNotification));
+var fastMatches = GetRules(inNotification));
 foreach(var match in fastMatches)
 {
     await match.EvaluateNotification(inNotification);
 }
 ```
 
-At some point the system will support parallel evaluation (potentially via the durable task framework) so that evaluations can be expensive/time consuming, querying external resources to determine if there should be a trigger.
+We put the `IsMatch` evaluation inside a `GetRules` call to allow optimisations (could be a `Lazy<IEnumerable<AlertRule>>` that may survive between executions to be evaluated again).
+
+For the 'slow matches' (`EvaluateNotification`) at some point the system may support parallel evaluation (potentially via the durable task framework), so that evaluations can be expensive/time consuming - maybe querying external resources to determine if there should be a trigger or not.
 
 ## Rule Authoring
 
